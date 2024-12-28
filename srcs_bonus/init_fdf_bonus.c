@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_fdf.c                                         :+:      :+:    :+:   */
+/*   init_fdf_bonus.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 13:03:53 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/27 03:26:45 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/28 01:46:41 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
+#include "fdf_bonus.h"
 
 static void	init_vars(t_vars *vars)
 {
@@ -18,15 +18,26 @@ static void	init_vars(t_vars *vars)
 	vars->win = NULL;
 	vars->map = NULL;
 	vars->colors = NULL;
+	vars->frame_count = 0;
+	vars->last_measured_ms = 0;
 	vars->map_height = -1;
 	vars->map_width = -1;
 	vars->screen_width = DEFAULT_SCREEN_WIDTH;
 	vars->screen_height = DEFAULT_SCREEN_HEIGHT;
+	vars->mouse_pressed = FALSE;
+	vars->mouse_x = 0;
+	vars->mouse_y = 0;
 	vars->need_update = TRUE;
 	vars->zoom = DEFAULT_ZOOM;
+	vars->zoom_min = DEFAULT_ZOOM * MIN_ZOOM_FACTOR;
+	vars->zoom_max = DEFAULT_ZOOM * MAX_ZOOM_FACTOR;
 	vars->scale_altitude = 1;
 	vars->offset_x = 0;
 	vars->offset_y = 0;
+	vars->shift_pressed = FALSE;
+	vars->rot_x = 0;
+	vars->rot_y = 0;
+	vars->rot_z = 0;
 }
 
 static int	setup_map_and_mlx(char *map_path, t_vars *vars)

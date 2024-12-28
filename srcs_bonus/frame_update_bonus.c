@@ -1,64 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   frame_animation_update.c                           :+:      :+:    :+:   */
+/*   frame_update_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 20:23:51 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/25 17:52:14 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/27 04:12:47 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
-#include <stdio.h>
+#include "fdf_bonus.h"
 
-void	isometric_projection(t_vars *vars, t_coord a, t_coord *iso_a)
+static long long	current_time_ms(void)
 {
-	int	zoom = 30;
-	int offset_x = (vars->screen_width - vars->map_width * zoom) / 2;
-	int offset_y = (vars->screen_height - vars->map_height * zoom) / 2; 
+	struct timeval	tv;
 
-	iso_a->x = round((a.x - a.y) * cos(0.523599) * zoom + offset_x);
-	iso_a->y = round(((a.x + a.y) * sin(0.523599) - a.z) * zoom + offset_y);
-}
-
-void	draw_map(t_vars *vars, t_img *frame)
-{
-	t_coord	iso_a;
-	t_coord	iso_b;
-	int y;
-	int x;
-	int	height_scale = 1;
-
-	y = 0;
-	while (y < vars->map_height)
-	{
-		x = 0;
-		while (x < vars->map_width)
-		{
-			if (x + 1 < vars->map_width)
-			{
-				isometric_projection(vars, (t_coord){x, y, vars->map[y][x] * height_scale}, &iso_a);
-				isometric_projection(vars, (t_coord){x + 1, y, vars->map[y][x + 1] * height_scale}, &iso_b);
-				draw_line(frame, iso_a, iso_b, vars);
-			}
-			if (y + 1 < vars->map_height)
-			{
-				isometric_projection(vars, (t_coord){x, y, vars->map[y][x] * height_scale}, &iso_a);
-				isometric_projection(vars, (t_coord){x, y + 1, vars->map[y + 1][x] * height_scale}, &iso_b);
-				draw_line(frame, iso_a, iso_b, vars);
-			}
-			x++;
-		}
-		y++;
-	}
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000LL));
 }
 
 int	update_frame(t_vars *vars)
 {
 	t_img	frame;
 
+	if (vars->need_update == FALSE)
+		return (OK);
 	if (vars->map == NULL)
 		return (OK);
 	frame.img = mlx_new_image(vars->mlx,
@@ -75,6 +42,7 @@ int	update_frame(t_vars *vars)
 	draw_map(vars, &frame);
 	mlx_put_image_to_window(vars->mlx, vars->win, frame.img, 0, 0);
 	mlx_destroy_image(vars->mlx, frame.img);
+	vars->need_update = FALSE;
 
 	//TODO: handle this case
 	if (current_time_ms() - vars->last_measured_ms < FRAME_RATE_MS)

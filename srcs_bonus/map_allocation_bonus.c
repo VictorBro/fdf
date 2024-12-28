@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map_allocation.c                                   :+:      :+:    :+:   */
+/*   map_allocation_bonus.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 12:59:07 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/27 04:16:03 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/27 04:16:41 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <stdio.h>
-#include "fdf.h"
+#include "fdf_bonus.h"
 
 static int	process_line(char *line, int idx, t_vars *vars)
 {

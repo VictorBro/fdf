@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "limits.h": "c",
+        "cmath": "cpp",
+        "limits": "c",
+        "fcntl.h": "c",
+        "fdf_bonus.h": "c",
+        "stdio.h": "c"
+    }
+}

@@ -1,47 +1,62 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fdf.h                                              :+:      :+:    :+:   */
+/*   fdf_bonus.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 22:56:57 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/27 04:02:19 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/28 01:57:23 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FDF_H
-# define FDF_H
+#ifndef FDF_BONUS_H
+# define FDF_BONUS_H
 # include <stdlib.h>
 # include <unistd.h>//for close
+# include <sys/time.h>
+# include <time.h>
 # include <math.h>
 # include "mlx.h"
 # include "libft.h"
 
 # define FALSE	0
 # define TRUE	1
+# define FRAME_RATE_MS 15
 # define DEFAULT_COLOR 0x00FFFFFF
 # define DEFAULT_SCREEN_WIDTH 1920
 # define DEFAULT_SCREEN_HEIGHT 1080
-# define DEFAULT_ZOOM 30
+# define DEFAULT_ZOOM 30.0
+# define ZOOM_FACTOR 1.1
+# define MIN_ZOOM_FACTOR 0.1 // Allow zoom out to 10% of initial
+# define MAX_ZOOM_FACTOR 10.0 // Allow zoom in to 1000% of initial
 # define PADDING 100 // Border padding in pixels
+# define ROT_SPEED 0.01
 
 # ifdef __linux__
 #  define OS_LINUX		TRUE
-#  define KEY_LEFT	 	65361
-#  define KEY_RIGHT		65363
-#  define KEY_DOWN		65364
-#  define KEY_UP		65362
-#  define KEY_ESC		65307
+#  define KEY_LEFT	 		65361
+#  define KEY_RIGHT			65363
+#  define KEY_DOWN			65364
+#  define KEY_UP			65362
+#  define KEY_ESC			65307
+#  define KEY_SHIFT_LEFT	65505
+#  define KEY_SHIFT_RIGHT	65506
 # elif __APPLE__
 #  define OS_LINUX		FALSE
-#  define KEY_LEFT		123
-#  define KEY_RIGHT		124
-#  define KEY_DOWN		125
-#  define KEY_UP		126
-#  define KEY_ESC		53
+#  define KEY_LEFT			123
+#  define KEY_RIGHT			124
+#  define KEY_DOWN			125
+#  define KEY_UP			126
+#  define KEY_ESC			53
+#  define KEY_SHIFT_LEFT	257
+#  define KEY_SHIFT_RIGHT	258
 # endif
 
+# define MOUSE_PRESS	4
+# define MOUSE_RELEASE	5
+# define MOUSE_MOVE		6
+# define KEY_PRESS		2
 # define DESTROY_NOTIFY	17
 
 # define TITLE "FDF"
@@ -63,6 +78,15 @@ enum
 	ALLOC_ERROR,
 };
 
+enum
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+	DIRS,
+};
+
 typedef struct s_img
 {
 	void	*img;
@@ -78,15 +102,27 @@ typedef struct s_vars
 	int			map_width;
 	int			screen_width;
 	int			screen_height;
+	int			mouse_pressed;
+	int			mouse_x;
+	int			mouse_y;
+	void		*background; //TODO: create menu
+	long long	last_measured_ms;
+	int			frame_count;
 	void		*mlx;
 	void		*win;
 	int			**map;
 	int			**colors;
 	int			need_update;
-	int			zoom;
+	double		zoom;
+	double		zoom_min;
+	double		zoom_max;
 	int			scale_altitude;
 	int			offset_x;
 	int			offset_y;
+	int			shift_pressed;
+	double		rot_x;
+	double		rot_y;
+	double		rot_z;
 }						t_vars;
 
 void		extract_map_data(char *path, t_vars *vars);
@@ -98,6 +134,10 @@ int			check_extension(char *file_name);
 void		print_map(t_vars *vars);
 int			ft_error(const char *msg);
 int			key_release(int keycode, t_vars *vars);
+int			key_press(int keycode, t_vars *vars);
+int			mouse_press(int button, int x, int y, t_vars *vars);
+int			mouse_release(int button, int x, int y, t_vars *vars);
+int			mouse_move(int x, int y, t_vars *vars);
 void		pixel_put(t_img *data, t_coord coord, int color, t_vars *vars);
 int			interpolate_color(int color1, int color2, double fraction);
 void		draw_line(t_img *data, t_coord start, t_coord end, t_vars *vars);

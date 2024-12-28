@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   render_utils.c                                     :+:      :+:    :+:   */
+/*   pixel_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 15:46:38 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/14 23:17:00 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/27 01:12:40 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,54 +51,20 @@ void	pixel_put(t_img *data, t_coord coord, int color, t_vars *vars)
 	}
 }
 
-void	ft_print_usage(char *prog_name)
+int	interpolate_color(int color1, int color2, double fraction)
 {
-	ft_printf("Usage: %s <path_to_fdf_map>\n", prog_name);
-}
+	t_coord	rgb1;
+	t_coord	rgb2;
+	t_coord	rgb;
 
-/**
- * draw_line - Draws a line on an image using Bresenham's line algorithm.
- * @data: Pointer to the image data structure.
- * @start: The starting coordinate of the line.
- * @end: The ending coordinate of the line.
- * @vars: Pointer to additional variables or settings.
- *
- * This function uses Bresenham's line algorithm to draw a line from the
- * starting coordinate to the ending coordinate on the given image. It
- * calculates the differences and steps for the x and y coordinates and
- * iteratively sets the pixels along the line path.
- */
-void	draw_line(t_img *data, t_coord start, t_coord end, t_vars *vars)
-{
-	t_coord	delta;
-	t_coord	step;
-	int		err;
-	int		e2;
-
-	delta.x = abs(end.x - start.x);
-	step.x = -1;
-	if (start.x < end.x)
-		step.x = 1;
-	delta.y = -abs(end.y - start.y);
-	step.y = -1;
-	if (start.y < end.y)
-		step.y = 1;
-	err = delta.x + delta.y;
-	while (1)
-	{
-		pixel_put(data, start, 0x00FFFFFF, vars);
-		if (start.x == end.x && start.y == end.y)
-			break ;
-		e2 = 2 * err;
-		if (e2 >= delta.y)
-		{
-			err += delta.y;
-			start.x += step.x;
-		}
-		if (e2 <= delta.x)
-		{
-			err += delta.x;
-			start.y += step.y;
-		}
-	}
+	rgb1.x = (color1 >> 16) & 0xFF;
+	rgb1.y = (color1 >> 8) & 0xFF;
+	rgb1.z = color1 & 0xFF;
+	rgb2.x = (color2 >> 16) & 0xFF;
+	rgb2.y = (color2 >> 8) & 0xFF;
+	rgb2.z = color2 & 0xFF;
+	rgb.x = rgb1.x + (rgb2.x - rgb1.x) * fraction;
+	rgb.y = rgb1.y + (rgb2.y - rgb1.y) * fraction;
+	rgb.z = rgb1.z + (rgb2.z - rgb1.z) * fraction;
+	return ((rgb.x << 16) | (rgb.y << 8) | rgb.z);
 }

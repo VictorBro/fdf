@@ -1,20 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   control_keys.c                                     :+:      :+:    :+:   */
+/*   close_display_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/25 21:47:27 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/27 03:23:56 by vbronov          ###   ########.fr       */
+/*   Created: 2024/12/08 04:04:40 by vbronov           #+#    #+#             */
+/*   Updated: 2024/12/27 04:12:31 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
+#include "fdf_bonus.h"
 
-int	key_release(int keycode, t_vars *vars)
+// Singletone
+int	ft_close(t_vars *vars)
 {
-	if (keycode == KEY_ESC)
-		ft_close(vars);
+	static int	closed;
+
+	if (!closed)
+	{
+		closed++;
+		free_map(vars);
+		mlx_destroy_window(vars->mlx, vars->win);
+		mlx_loop_end(vars->mlx);
+	}
+	ft_printf("Exited\n");
+	if (OS_LINUX == FALSE)
+		exit (0);
 	return (OK);
 }

@@ -6,7 +6,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/fdf",
-        "args": ["maps/basic.fdf"], // Pass your command-line argument here
+        "args": ["maps/mars.fdf"], // Pass your command-line argument here
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
         "environment": [],
