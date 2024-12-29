@@ -6,17 +6,31 @@
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/25 21:47:27 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/28 05:15:41 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/29 17:09:18 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf_bonus.h"
-#include <stdio.h>
 
 int	key_press(int keycode, t_vars *vars)
 {
 	if (keycode == KEY_SHIFT_LEFT || keycode == KEY_SHIFT_RIGHT)
 		vars->shift_pressed = TRUE;
+	else if (keycode == KEY_UP)
+	{
+		vars->scale_altitude += ALTITUDE_FACTOR;
+		vars->need_update = TRUE;
+	}
+	else if (keycode == KEY_DOWN)
+	{
+		vars->scale_altitude -= ALTITUDE_FACTOR;
+		vars->need_update = TRUE;
+	}
+	else if (keycode == KEY_P)
+	{
+		vars->projection = (vars->projection + 1) % PROJECTIONS;
+		vars->need_update = TRUE;
+	}
 	return (OK);
 }
 
@@ -76,12 +90,13 @@ int	mouse_move(int x, int y, t_vars *vars)
 	{
 		dx = x - vars->mouse_x;
 		dy = y - vars->mouse_y;
-		if (vars->shift_pressed)
+		if (vars->shift_pressed && vars->projection == ISOMETRIC)
 		{
 			vars->rot_z += dx * ROT_SPEED;
-			printf("rot_x: %f, rot_y: %f, rot_z: %f\n", vars->rot_x, vars->rot_y, vars->rot_z);
-			//TODO: TBD
-			// vars->rot_x += dy * ROT_SPEED;
+			if (vars->rot_z > 2 * M_PI)
+				vars->rot_z -= 2 * M_PI;
+			else if (vars->rot_z < -2 * M_PI)
+				vars->rot_z += 2 * M_PI;
 		}
 		else
 		{

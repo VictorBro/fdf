@@ -28,6 +28,8 @@ BONUS_FILES := main_bonus.c \
 		utils_bonus.c	\
 		close_display_bonus.c \
 		draw_map_bonus.c \
+		projections_bonus.c \
+		rotation_bonus.c \
 		frame_update_bonus.c \
 		pixel_utils_bonus.c \
 		line_utils_bonus.c \

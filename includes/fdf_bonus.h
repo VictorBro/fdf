@@ -6,7 +6,7 @@
 /*   By: vbronov <vbronov@student.42lausanne.ch>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 22:56:57 by vbronov           #+#    #+#             */
-/*   Updated: 2024/12/28 01:57:23 by vbronov          ###   ########.fr       */
+/*   Updated: 2024/12/29 18:20:56 by vbronov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,12 @@
 # define FDF_BONUS_H
 # include <stdlib.h>
 # include <unistd.h>//for close
-# include <sys/time.h>
-# include <time.h>
 # include <math.h>
 # include "mlx.h"
 # include "libft.h"
 
 # define FALSE	0
 # define TRUE	1
-# define FRAME_RATE_MS 15
 # define DEFAULT_COLOR 0x00FFFFFF
 # define DEFAULT_SCREEN_WIDTH 1920
 # define DEFAULT_SCREEN_HEIGHT 1080
@@ -32,25 +29,27 @@
 # define MAX_ZOOM_FACTOR 10.0 // Allow zoom in to 1000% of initial
 # define PADDING 100 // Border padding in pixels
 # define ROT_SPEED 0.01
+# define ALTITUDE_FACTOR 0.1
+# define TEXT_COLOR 0x00FFFFFF
+# define MARGIN 20
+# define HIGHLIGHT_COLOR 0x0000FF00
 
 # ifdef __linux__
 #  define OS_LINUX		TRUE
-#  define KEY_LEFT	 		65361
-#  define KEY_RIGHT			65363
 #  define KEY_DOWN			65364
 #  define KEY_UP			65362
 #  define KEY_ESC			65307
 #  define KEY_SHIFT_LEFT	65505
 #  define KEY_SHIFT_RIGHT	65506
+#  define KEY_P				112
 # elif __APPLE__
 #  define OS_LINUX		FALSE
-#  define KEY_LEFT			123
-#  define KEY_RIGHT			124
 #  define KEY_DOWN			125
 #  define KEY_UP			126
 #  define KEY_ESC			53
 #  define KEY_SHIFT_LEFT	257
 #  define KEY_SHIFT_RIGHT	258
+#  define KEY_P				35
 # endif
 
 # define MOUSE_PRESS	4
@@ -80,11 +79,11 @@ enum
 
 enum
 {
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-	DIRS,
+	ISOMETRIC,
+	ORTHOGRAPHIC_FRONT,
+	ORTHOGRAPHIC_SIDE,
+	ORTHOGRAPHIC_TOP,
+	PROJECTIONS,
 };
 
 typedef struct s_img
@@ -105,9 +104,6 @@ typedef struct s_vars
 	int			mouse_pressed;
 	int			mouse_x;
 	int			mouse_y;
-	void		*background; //TODO: create menu
-	long long	last_measured_ms;
-	int			frame_count;
 	void		*mlx;
 	void		*win;
 	int			**map;
@@ -116,13 +112,14 @@ typedef struct s_vars
 	double		zoom;
 	double		zoom_min;
 	double		zoom_max;
-	int			scale_altitude;
+	double		scale_altitude;
 	int			offset_x;
 	int			offset_y;
 	int			shift_pressed;
 	double		rot_x;
 	double		rot_y;
 	double		rot_z;
+	char		projection;
 }						t_vars;
 
 void		extract_map_data(char *path, t_vars *vars);
@@ -148,6 +145,8 @@ int			init_fdf(char *map_path, t_vars *vars);
 void		destroy_mlx_display(t_vars *vars);
 int			parse_line(int idx, char **split, t_vars *vars);
 void		init_transform(t_vars *vars);
+void		rotate_point(double *x, double *y, double *z, t_vars *vars);
+void		project_point(t_vars *vars, t_coord a, t_coord *proj_a);
 
 # ifdef __APPLE__
 
